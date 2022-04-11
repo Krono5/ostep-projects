@@ -14,6 +14,7 @@ int main(int argc, char *argv[]) {
     char concatString[9999];
 
     if (argc == 1) {
+        printf("wzip: file1 [file2 ...]\n");
         return 1;
     }
 
