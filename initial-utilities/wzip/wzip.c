@@ -7,55 +7,53 @@
 
 
 int main(int argc, char *argv[]) {
-    int fileNum = 1;
     FILE *input_file = NULL;
-    char concatString[9999];
+    char currChar;
+    bool firstChar = true;
+    char lastChar;
+    int charCount = 1;
 
+    // NO FILES TO PARSE
     if (argc == 1) {
         printf("wzip: file1 [file2 ...]\n");
         return 1;
     }
 
-    while (fileNum < argc) {
-        char* tempstring;
-        size_t lineBufSize;
-        int numChars = 1;
+    // GO THROUGH EVERY FILE
+    for (int fileNum = 1; fileNum < argc; ++fileNum) {
         input_file = freopen(argv[fileNum], "r", stdin);
-        stdin = input_file;
-        while (numChars > 0){
-            numChars = getline(&tempstring, &lineBufSize, stdin);
-            if (numChars > 0){
-                strcat(concatString, tempstring);
+
+        // GET THE FIRST CHAR OF THE FILE
+        currChar = (char) fgetc(input_file);
+        do {
+            // IF THIS IS THE FIRST CHAR EVER READ
+            if (firstChar){
+                firstChar = false;
+//                charCount++;
             }
-        }
-        fileNum++;
+            // NOT THE SAME CHAR, PRINT CURRENT COUNT AND MOVE ON
+            else if(currChar != lastChar){
+                writeNum(charCount);
+                writeChar(lastChar);
+                charCount = 1;
+            }
+            // SAME CHAR INCREMENT
+            else{
+                charCount++;
+            }
+            lastChar = currChar;
+            currChar = (char) fgetc(input_file);
+        } while (currChar != EOF);
+
+        fclose(input_file);
     }
 
-    compressFile(concatString);
+    if (charCount > 0){
+        writeNum(charCount);
+        writeChar(lastChar);
+    }
 
     return 0;
-}
-
-void compressFile(char * inputLine){
-    char currChar;
-    int currPos = 0;
-    int charCount = 0;
-
-    currChar = inputLine[0];
-    while (currPos <= strlen(inputLine)) {
-        if (inputLine[currPos] == currChar) {
-            charCount++;
-        } else {
-            writeNum(charCount);
-            writeChar(currChar);
-            currChar = inputLine[currPos];
-            charCount = 1;
-        }
-        if (currPos == strlen(inputLine)) {
-            break;
-        }
-        currPos++;
-    }
 }
 
 void writeChar(char character) {
