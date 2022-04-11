@@ -6,43 +6,58 @@
 
 
 int main(int argc, char *argv[]) {
-    char *readLine;
+    char *buffer[BUFF_SIZE];
+    int numLines = 0;
     size_t lineBufSize = 0;
-    size_t lineSize;
+    int fileNum = 1;
+    FILE *input_file = NULL;
+    char concatString[9999];
 
-    if (argc != 1) {
-        FILE *input_file = NULL;
-        input_file = freopen(argv[1], "r", stdin);
-        if (input_file == NULL || argv[2] != NULL) {
-            return (EXIT_FAILURE);
-        } else {
-            stdin = input_file;
-        }
+    if (argc == 1) {
+        return 1;
     }
 
-    lineSize = getline(&readLine, &lineBufSize, stdin);
+    for (int i = 0; i < BUFF_SIZE; ++i) {
+        buffer[i] = NULL;
+    }
+
+    while (fileNum < argc) {
+        input_file = freopen(argv[fileNum], "r", stdin);
+        stdin = input_file;
+        getline(&buffer[numLines], &lineBufSize, stdin);
+        numLines++;
+        fileNum++;
+    }
+
+    for (int i = 0; i < numLines; ++i) {
+        strcat(concatString, buffer[i]);
+    }
     char currChar = ' ';
-//    while (currChar != '\0'){
     int currPos = 0;
     int charCount = 0;
-    currChar = readLine[0];
-    while (currPos <= strlen(readLine)) {
-        if (readLine[currPos] == currChar) {
+
+    currChar = concatString[0];
+    while (currPos <= strlen(concatString)) {
+        if (concatString[currPos] == currChar) {
             charCount++;
         } else {
-            fwrite(&charCount, 4, 1, stdout);
-            fwrite(&currChar, 1, 1, stdout);
-            currChar = readLine[currPos];
+            writeNum(charCount);
+            writeChar(currChar);
+            currChar = concatString[currPos];
             charCount = 1;
         }
-        if(currPos == strlen(readLine)){
+        if (currPos == strlen(concatString)) {
             break;
         }
         currPos++;
-//        }
-//        lineSize = getline(&readLine, &lineBufSize, stdin);
     }
-
-    free(readLine);
     return 0;
+}
+
+void writeChar(char character) {
+    fwrite(&character, 1, 1, stdout);
+}
+
+void writeNum(int charCount) {
+    fwrite(&charCount, 4, 1, stdout);
 }
