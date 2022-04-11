@@ -23,10 +23,13 @@ int main(int argc, char *argv[]) {
     }
 
     while (fileNum < argc) {
+        int numChars;
         input_file = freopen(argv[fileNum], "r", stdin);
         stdin = input_file;
-        getline(&buffer[numLines], &lineBufSize, stdin);
-        numLines++;
+        do{
+            numChars = getline(&buffer[numLines], &lineBufSize, stdin);
+            numLines++;
+        } while (numChars >= 0);
         fileNum++;
     }
 
