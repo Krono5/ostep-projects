@@ -7,4 +7,6 @@ void writeChar(char character);
 
 void writeNum(int charCount);
 
+void compressFile(char * inputLine);
+
 #endif //WZIP_H
