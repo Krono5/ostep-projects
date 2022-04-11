@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include "stdio.h"
 #include "wzip.h"
 
@@ -12,6 +13,7 @@ int main(int argc, char *argv[]) {
     int fileNum = 1;
     FILE *input_file = NULL;
     char concatString[9999];
+    char* tempstring;
 
     if (argc == 1) {
         printf("wzip: file1 [file2 ...]\n");
@@ -22,20 +24,22 @@ int main(int argc, char *argv[]) {
         buffer[i] = NULL;
     }
 
-    while (fileNum < argc) {
-        int numChars;
+    while (fileNum < argc) {\
+        int numChars = 1;
         input_file = freopen(argv[fileNum], "r", stdin);
         stdin = input_file;
-        do{
-            numChars = getline(&buffer[numLines], &lineBufSize, stdin);
-            numLines++;
-        } while (numChars >= 0);
+        while (numChars > 0){
+            numChars = getline(&tempstring, &lineBufSize, stdin);
+            if (numChars > 0){
+                strcat(concatString, tempstring);
+            }
+        }
         fileNum++;
     }
 
-    for (int i = 0; i < numLines; ++i) {
-        strcat(concatString, buffer[i]);
-    }
+//    for (int i = 0; i < numLines; ++i) {
+//        strcat(concatString, buffer[i]);
+//    }
     char currChar = ' ';
     int currPos = 0;
     int charCount = 0;
