@@ -1,6 +1,4 @@
-#include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <stdbool.h>
 #include "stdio.h"
 #include "wzip.h"
@@ -26,10 +24,9 @@ int main(int argc, char *argv[]) {
         // GET THE FIRST CHAR OF THE FILE
         currChar = (char) fgetc(input_file);
         do {
-            // IF THIS IS THE FIRST CHAR EVER READ
+            // IF THIS IS THE FIRST CHAR EVER READ SKIP COMPARISON
             if (firstChar){
                 firstChar = false;
-//                charCount++;
             }
             // NOT THE SAME CHAR, PRINT CURRENT COUNT AND MOVE ON
             else if(currChar != lastChar){
@@ -44,7 +41,6 @@ int main(int argc, char *argv[]) {
             lastChar = currChar;
             currChar = (char) fgetc(input_file);
         } while (currChar != EOF);
-
         fclose(input_file);
     }
 
