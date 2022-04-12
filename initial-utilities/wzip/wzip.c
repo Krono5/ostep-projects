@@ -27,19 +27,23 @@ int main(int argc, char *argv[]) {
             // IF THIS IS THE FIRST CHAR EVER READ SKIP COMPARISON
             if (firstChar){
                 firstChar = false;
+                lastChar = currChar;
+                currChar = (char) fgetc(input_file);
             }
             // NOT THE SAME CHAR, PRINT CURRENT COUNT AND MOVE ON
             else if(currChar != lastChar){
                 writeNum(charCount);
                 writeChar(lastChar);
                 charCount = 1;
+                lastChar = currChar;
+                currChar = (char) fgetc(input_file);
             }
             // SAME CHAR INCREMENT
             else{
                 charCount++;
+                lastChar = currChar;
+                currChar = (char) fgetc(input_file);
             }
-            lastChar = currChar;
-            currChar = (char) fgetc(input_file);
         } while (currChar != EOF);
         fclose(input_file);
     }
