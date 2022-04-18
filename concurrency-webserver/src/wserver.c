@@ -2,15 +2,9 @@
 #include <pthread.h>
 #include "request.h"
 #include "io_helper.h"
+#include "threadpool.h"
 
 char default_root[] = ".";
-
-
-void *mythread(void *arg) {
-    request_handle((int) arg);
-    close_or_die((int) arg);
-    return NULL;
-}
 
 //
 // ./wserver [-d <basedir>] [-p <portnum>] 
@@ -22,7 +16,6 @@ int main(int argc, char *argv[]) {
     int numThreads = 1;
     int numBuffers = 0;
     char schedalg[50];
-    int threadNum = 0;
 
     while ((c = getopt(argc, argv, "d:p:t:b:s:")) != -1){
         switch (c) {
@@ -54,7 +47,7 @@ int main(int argc, char *argv[]) {
     printf("Schedalg: %s\n", schedalg);
 
 
-    pthread_t p[numThreads];
+    thread_pool_init(numThreads);
     // run out of this directory
     chdir_or_die(root_dir);
 
@@ -64,8 +57,7 @@ int main(int argc, char *argv[]) {
         struct sockaddr_in client_addr;
         int client_len = sizeof(client_addr);
         int conn_fd = accept_or_die(listen_fd, (sockaddr_t *) &client_addr, (socklen_t *) &client_len);
-        pthread_create(&p[threadNum], NULL, mythread, conn_fd);
-        threadNum++;
+        Queue_Enqueue(&jobs, conn_fd);
     }
     return 0;
 }
