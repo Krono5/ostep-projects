@@ -1,4 +1,13 @@
-#include "threadpool.h"
+#include <pthread.h>
+
+#include "request.h"
+#include "queue.h"
+#include "io_helper.h"
+
+pthread_cond_t fill = PTHREAD_COND_INITIALIZER;
+pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
+queue_t jobs;
+
 
 void *worker(void *arg) {
     while (1) {
