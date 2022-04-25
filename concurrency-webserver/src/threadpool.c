@@ -1,8 +1,6 @@
-#include <pthread.h>
 
-#include "request.h"
-#include "queue.h"
-#include "io_helper.h"
+
+#include "threadpool.h"
 
 pthread_cond_t fill = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;

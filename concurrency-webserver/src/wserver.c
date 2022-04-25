@@ -1,10 +1,9 @@
 #include <stdio.h>
-#include "io_helper.h"
-#include "threadpool.h2"
-#include "queue.h"
+#include "threadpool.h"
 
 char default_root[] = ".";
 extern queue_t jobs;
+extern pthread_cond_t fill;
 
 //
 // ./wserver [-d <basedir>] [-p <portnum>] 
@@ -15,7 +14,7 @@ int main(int argc, char *argv[]) {
     int port = 10000;
     int numThreads = 1;
     int numBuffers = 0;
-    char schedalg[50];
+//    char schedalg[50];
 
     while ((c = getopt(argc, argv, "d:p:t:b:s:")) != -1){
         switch (c) {
@@ -32,7 +31,7 @@ int main(int argc, char *argv[]) {
                 numBuffers = atoi(optarg);
                 break;
             case 's':
-                strcpy(schedalg, optarg);
+//                strcpy(schedalg, optarg);
                 break;
             default:
                 fprintf(stderr, "usage: wserver [-d basedir] [-p port]\n");
@@ -44,7 +43,6 @@ int main(int argc, char *argv[]) {
     printf("Port Number: %d\n", port);
     printf("Number of Threads: %d\n", numThreads);
     printf("Number of Buffers: %d\n", numBuffers);
-    printf("Schedalg: %s\n", schedalg);
 
 
     thread_pool_init(numThreads);
@@ -57,7 +55,8 @@ int main(int argc, char *argv[]) {
         struct sockaddr_in client_addr;
         int client_len = sizeof(client_addr);
         int conn_fd = accept_or_die(listen_fd, (sockaddr_t *) &client_addr, (socklen_t *) &client_len);
-//        Queue_Enqueue(&jobs, conn_fd);
+        Queue_Enqueue(&jobs, conn_fd);
+        pthread_cond_signal(&fill);
     }
     return 0;
 }

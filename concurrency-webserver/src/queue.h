@@ -7,6 +7,12 @@
 #include "stdlib.h"
 #include <stdbool.h>
 
+#include <pthread.h>
+
+#include "request.h"
+#include "io_helper.h"
+
+
 typedef struct __node_t {
     int value;
     struct __node_t *next;

@@ -5,4 +5,4 @@ set(CMAKE_C_STANDARD 99)
 
 #add_executable(concurrency_webserver src/wserver.c src/io_helper.h src/request.h)
 
-add_executable(concurrency_webserver src/wserver.c src/io_helper.h src/request.h src/threadpool.c src/queue.c src/queue.h src/threadpool.h2)
+add_executable(concurrency_webserver src/wserver.c src/io_helper.h src/request.h src/threadpool.c src/queue.c src/queue.h src/threadpool.h)
