@@ -1,7 +1,7 @@
 .PHONY: clean
 
 OBJS = wzip.o
-CFLAG = -Wall -g
+CFLAG = -Wall -g -pthread
 CC = gcc
 TARGET = wzip
 
