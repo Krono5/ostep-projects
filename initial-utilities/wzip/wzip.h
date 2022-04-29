@@ -12,6 +12,21 @@ typedef struct __res_pair {
     int numCharacters;
 } res_pair;
 
+typedef struct ret_val_t {
+    char firstCharacter;
+    char lastCharacter;
+    int numPairs;
+    res_pair *resultPairs;
+} ret_val;   // information passed back to the main thread
+
+typedef struct arg_val_t {
+    char *src;
+    bool *isFirstChar;
+    int *charCount;
+    char *lastChar;
+    char *firstChar;
+} arg_val;   // information passed to the thread
+
 typedef struct __arg {
     arg_val arg_val;
     ret_val ret_val;

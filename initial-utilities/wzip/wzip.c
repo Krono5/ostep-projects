@@ -41,9 +41,9 @@ int main(int argc, char *argv[]) {
             strings[1] = malloc(strlen(src) / 3 + 1);
             strings[2] = malloc(strlen(src) / 3 + 1);
 
-            strncpy(strings[0], src, strlen(src) / 3);
-            strncpy(strings[1], &src[strlen(src) / 3], strlen(src) / 3);
-            strncpy(strings[2], &src[2 * (strlen(src) / 3)], strlen(src) / 3 + 1);
+            strncpy(strings[0], src, first);
+            strncpy(strings[1], &src[first], second - first);
+            strncpy(strings[2], &src[second], strlen(src) - second);
 
             init_arg(arg[0], strings[0], &isFirstChar);
             init_arg(arg[1], strings[1], &isFirstChar);
@@ -197,4 +197,13 @@ ret_val* combine_returns(struct ret_val_t *first, struct ret_val_t *second){
 void writePair(res_pair pair) {
     fwrite(&pair.numCharacters, 4, 1, stdout);
     fwrite(&pair.character, 1, 1, stdout);
+}
+
+void write_and_free(ret_val* values) {
+    for (int i = 0; i < values->numPairs; ++i) {
+        res_pair* pair = &values[i];
+        writePair(*pair);
+        free(pair);
+    }
+    free(values);
 }
