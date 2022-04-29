@@ -13,26 +13,10 @@ typedef struct __res_pair {
 } res_pair;
 
 typedef struct __arg {
-    struct arg_val_t {
-        char *src;
-        bool *isFirstChar;
-        int *charCount;
-        char *lastChar;
-        char *firstChar;
-    } arg_val;   // information passed to the thread
-
-    struct ret_val_t {
-        char firstCharacter;
-        char lastCharacter;
-        res_pair *resultPairs;
-    } ret_val;   // information passed back to the main thread
+    arg_val arg_val;
+    ret_val ret_val;
 } arg_t;
 
-typedef struct __file_res {
-    res_pair *filePairs;
-    char firstChar;
-    char lastChar;
-} file_res;
 
 struct stat fileStat;
 
@@ -43,5 +27,11 @@ void init_arg(arg_t arg, char *inputString, bool *isFirstChar);
 void parse(char *src, bool *isFirstChar, int *charCount, char *lastChar, char *firstCharacter);
 
 void writePair(res_pair pair);
+
+void parseThreaded(arg_t *args);
+
+ret_val* combine_returns(struct ret_val_t *first, struct ret_val_t *second);
+
+void write_all_pairs(res_pair *result_pairs, int num_pairs);
 
 #endif //WZIP_H
