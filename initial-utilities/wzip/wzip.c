@@ -52,6 +52,8 @@ int main(int argc, char *argv[]) {
             pthread_join(threads[0], NULL);
             pthread_join(threads[1], NULL);
             pthread_join(threads[2], NULL);
+
+            // TODO: JOIN RESULTING ARGS HERE
         }
             // FILE SIZE IS LESS THAN 4K
         else {
