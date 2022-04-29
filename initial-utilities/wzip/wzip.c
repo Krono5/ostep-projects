@@ -148,8 +148,8 @@ void parseThreaded(arg_t *args) {
             // not the same make pair
             args->ret_val.numPairs++;
             args->ret_val.resultPairs = realloc(args->ret_val.resultPairs, args->ret_val.numPairs * sizeof(res_pair));
-            args->ret_val.resultPairs[args->ret_val.numPairs].character = lastChar;
-            args->ret_val.resultPairs[args->ret_val.numPairs].numCharacters = charCount;
+            args->ret_val.resultPairs[args->ret_val.numPairs - 1].character = lastChar;
+            args->ret_val.resultPairs[args->ret_val.numPairs - 1].numCharacters = charCount;
             charCount = 1;
             lastChar = currChar;
         } else {
@@ -157,6 +157,10 @@ void parseThreaded(arg_t *args) {
         }
     }
 
+    args->ret_val.numPairs++;
+    args->ret_val.resultPairs = realloc(args->ret_val.resultPairs, args->ret_val.numPairs * sizeof(res_pair));
+    args->ret_val.resultPairs[args->ret_val.numPairs - 1].character = lastChar;
+    args->ret_val.resultPairs[args->ret_val.numPairs - 1].numCharacters = charCount;
     args->ret_val.lastCharacter = lastChar;
 }
 
@@ -207,5 +211,4 @@ void write_and_free(ret_val *values) {
         writePair(*pair);
         free(pair);
     }
-    free(values);
 }
