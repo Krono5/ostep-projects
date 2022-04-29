@@ -57,22 +57,25 @@ int main(int argc, char *argv[]) {
             pthread_join(threads[1], NULL);
             pthread_join(threads[2], NULL);
 
-            // TODO: JOIN RESULTING ARGS HERE
         }
             // FILE SIZE IS LESS THAN 4K
         else {
-            parse(src, &isFirstChar, &charCount, &lastChar, &firstChar);
+            arg_t smallArg = {};
+            init_arg(&smallArg, src);
+            parseThreaded(&smallArg);
+            combine_returns(&master_returns, &smallArg.ret_val);
+//            parse(src, &isFirstChar, &charCount, &lastChar, &firstChar);
         }
         fclose(input_file);
     }
 
-    if (charCount > 0) {
-        res_pair *pair = malloc(sizeof(res_pair));
-        pair->numCharacters = charCount;
-        pair->character = lastChar;
-        writePair(*pair);
-        free(pair);
-    }
+//    if (charCount > 0) {
+//        res_pair *pair = malloc(sizeof(res_pair));
+//        pair->numCharacters = charCount;
+//        pair->character = lastChar;
+//        writePair(*pair);
+//        free(pair);
+//    }
 
     return 0;
 }
@@ -142,10 +145,10 @@ void parseThreaded(arg_t *args) {
 
     for (int i = 1; i < strlen(args->arg_val.src); ++i) {
         currChar = args->arg_val.src[i];
-        if(currChar != lastChar){
+        if (currChar != lastChar) {
             // not the same make pair
             args->ret_val.numPairs++;
-            args->ret_val.resultPairs = realloc(args->ret_val.resultPairs, args->ret_val.numPairs * sizeof (res_pair));
+            args->ret_val.resultPairs = realloc(args->ret_val.resultPairs, args->ret_val.numPairs * sizeof(res_pair));
             args->ret_val.resultPairs[args->ret_val.numPairs].character = lastChar;
             args->ret_val.resultPairs[args->ret_val.numPairs].numCharacters = charCount;
             charCount = 1;
@@ -162,8 +165,8 @@ ret_val* combine_returns(struct ret_val_t *first, struct ret_val_t *second){
     ret_val* returnPairSet;
 
     // CHARACTERS ARE THE SAME, COMPACT THE ARGS
-    if(first->lastCharacter == second->firstCharacter){
-        returnPairSet = malloc((first->numPairs + second->numPairs - 1) * sizeof(res_pair) );
+    if (first->lastCharacter == second->firstCharacter) {
+        returnPairSet = malloc((first->numPairs + second->numPairs - 1) * sizeof(res_pair));
         first->resultPairs[first->numPairs].numCharacters += second->resultPairs[0].numCharacters;
 
         for (int i = 0; i < first->numPairs; ++i) {
@@ -173,9 +176,9 @@ ret_val* combine_returns(struct ret_val_t *first, struct ret_val_t *second){
             memmove(&returnPairSet[i + first->numPairs - 1], &second->resultPairs[i], sizeof(res_pair));
         }
     }
-    // NOT THE SAME, JUST COMPOUND
-    else{
-        returnPairSet = malloc((first->numPairs + second->numPairs) * sizeof(res_pair) );
+        // NOT THE SAME, JUST COMPOUND
+    else {
+        returnPairSet = malloc((first->numPairs + second->numPairs) * sizeof(res_pair));
         for (int i = 0; i < first->numPairs; ++i) {
             memmove(&returnPairSet[i], &first->resultPairs[i], sizeof(res_pair));
         }
@@ -199,9 +202,9 @@ void writePair(res_pair pair) {
     fwrite(&pair.character, 1, 1, stdout);
 }
 
-void write_and_free(ret_val* values) {
+void write_and_free(ret_val *values) {
     for (int i = 0; i < values->numPairs; ++i) {
-        res_pair* pair = &values[i];
+        res_pair *pair = &values->resultPairs[i];
         writePair(*pair);
         free(pair);
     }

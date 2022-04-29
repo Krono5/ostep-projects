@@ -1,0 +1,2 @@
+double free or corruption (out)
+../../tester/run-tests.sh: line 27:  9481 Aborted                 (core dumped) ./wzip tests/1.in
