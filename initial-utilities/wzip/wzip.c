@@ -61,7 +61,12 @@ int main(int argc, char *argv[]) {
             arg_t smallArg = {};
             init_arg(&smallArg, src);
             parseThreaded(&smallArg);
-            combine_returns(&master_returns, &smallArg.ret_val);
+            if (fileNum > 1) {
+                combine_returns(&master_returns, &smallArg.ret_val);
+            }
+            else {
+                master_returns = smallArg.ret_val;
+            }
 //            parse(src, &isFirstChar, &charCount, &lastChar, &firstChar);
         }
         fclose(input_file);
