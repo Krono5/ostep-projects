@@ -8,17 +8,15 @@
 
 int main(int argc, char *argv[]) {
     FILE *input_file = NULL;
-    bool isFirstChar = true;
-    char lastChar;
     char *src;
-    int charCount = 1;
-    char firstChar;
 
     // NO FILES TO PARSE
     if (argc == 1) {
         printf("wzip: file1 [file2 ...]\n");
         return 1;
     }
+
+    ret_val master_returns = {};
 
     // GO THROUGH EVERY FILE
     for (int fileNum = 1; fileNum < argc; ++fileNum) {
@@ -34,8 +32,8 @@ int main(int argc, char *argv[]) {
             arg_t arg[3];
             char *strings[3];
 
-            int first = strlen(src) / 3;
-            int second = 2 * strlen(src) / 3;
+            size_t first = strlen(src) / 3;
+            size_t second = 2 * strlen(src) / 3;
 
             strings[0] = malloc(strlen(src) / 3 + 1);
             strings[1] = malloc(strlen(src) / 3 + 1);
@@ -45,9 +43,9 @@ int main(int argc, char *argv[]) {
             strncpy(strings[1], &src[first], second - first);
             strncpy(strings[2], &src[second], strlen(src) - second);
 
-            init_arg(arg[0], strings[0], &isFirstChar);
-            init_arg(arg[1], strings[1], &isFirstChar);
-            init_arg(arg[2], strings[2], &isFirstChar);
+            init_arg(&arg[0], strings[0]);
+            init_arg(&arg[1], strings[1]);
+            init_arg(&arg[2], strings[2]);
 
             pthread_create(&threads[0], NULL, worker, &arg[0]);
             pthread_create(&threads[1], NULL, worker, &arg[1]);
@@ -69,6 +67,8 @@ int main(int argc, char *argv[]) {
         fclose(input_file);
     }
 
+    write_and_free(&master_returns);
+
 //    if (charCount > 0) {
 //        res_pair *pair = malloc(sizeof(res_pair));
 //        pair->numCharacters = charCount;
@@ -85,11 +85,10 @@ int main(int argc, char *argv[]) {
  * @param arg
  * @param inputString
  */
-void init_arg(arg_t arg, char *inputString, bool *isFirstChar) {
-    arg.arg_val.src = inputString;
-    *arg.arg_val.isFirstChar = isFirstChar;
-    arg.ret_val.resultPairs = malloc(sizeof(res_pair));
-    arg.ret_val.numPairs = 0;
+void init_arg(arg_t *arg, char *inputString) {
+    arg->arg_val.src = inputString;
+    arg->ret_val.resultPairs = malloc(sizeof(res_pair));
+    arg->ret_val.numPairs = 0;
 }
 
 void *worker(arg_t arg) {
@@ -161,8 +160,8 @@ void parseThreaded(arg_t *args) {
     args->ret_val.lastCharacter = lastChar;
 }
 
-ret_val* combine_returns(struct ret_val_t *first, struct ret_val_t *second){
-    ret_val* returnPairSet;
+ret_val *combine_returns(ret_val *first, ret_val *second) {
+    ret_val *returnPairSet;
 
     // CHARACTERS ARE THE SAME, COMPACT THE ARGS
     if (first->lastCharacter == second->firstCharacter) {

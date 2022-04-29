@@ -21,7 +21,6 @@ typedef struct ret_val_t {
 
 typedef struct arg_val_t {
     char *src;
-    bool *isFirstChar;
     int *charCount;
     char *lastChar;
     char *firstChar;
@@ -37,7 +36,7 @@ struct stat fileStat;
 
 void *worker(arg_t arg);
 
-void init_arg(arg_t arg, char *inputString, bool *isFirstChar);
+void init_arg(arg_t *arg, char *inputString);
 
 void parse(char *src, bool *isFirstChar, int *charCount, char *lastChar, char *firstCharacter);
 
@@ -45,8 +44,8 @@ void writePair(res_pair pair);
 
 void parseThreaded(arg_t *args);
 
-ret_val* combine_returns(struct ret_val_t *first, struct ret_val_t *second);
+ret_val* combine_returns(ret_val *first, ret_val *second);
 
-void write_all_pairs(res_pair *result_pairs, int num_pairs);
+void write_and_free(ret_val *values);
 
 #endif //WZIP_H
