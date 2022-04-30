@@ -103,44 +103,6 @@ void *worker(arg_t arg) {
     return NULL;
 }
 
-void parse(char *src, bool *isFirstChar, int *charCount, char *lastChar, char *firstCharacter) {
-    char currChar;
-
-    // GET THE FIRST CHAR OF THE FILE
-    int charPos = 0;
-    currChar = src[charPos];
-    *firstCharacter = currChar;
-
-    do {
-        // IF THIS IS THE FIRST CHAR EVER READ SKIP COMPARISON
-        if (*isFirstChar) {
-            *isFirstChar = false;
-            *lastChar = currChar;
-            charPos++;
-            currChar = src[charPos];
-        }
-            // NOT THE SAME CHAR, PRINT CURRENT COUNT AND MOVE ON
-        else if (currChar != *lastChar) {
-            res_pair *pair = malloc(sizeof(res_pair));
-            pair->character = *lastChar;
-            pair->numCharacters = *charCount;
-            writePair(*pair);
-            free(pair);
-            *charCount = 1;
-            *lastChar = currChar;
-            charPos++;
-            currChar = src[charPos];
-        }
-            // SAME CHAR INCREMENT
-        else {
-            *charCount = *charCount + 1;
-            *lastChar = currChar;
-            charPos++;
-            currChar = src[charPos];
-        }
-    } while (charPos < strlen(src));
-}
-
 
 void parseThreaded(arg_t *args) {
     char currChar;

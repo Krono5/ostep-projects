@@ -38,8 +38,6 @@ void *worker(arg_t arg);
 
 void init_arg(arg_t *arg, char *inputString);
 
-void parse(char *src, bool *isFirstChar, int *charCount, char *lastChar, char *firstCharacter);
-
 void writePair(res_pair pair);
 
 void parseThreaded(arg_t *args);
