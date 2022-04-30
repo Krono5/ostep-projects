@@ -55,6 +55,15 @@ int main(int argc, char *argv[]) {
             pthread_join(threads[1], NULL);
             pthread_join(threads[2], NULL);
 
+
+            if (fileNum > 1) {
+                combine_returns(master_returns, arg[0].ret_val);
+            }
+            else {
+                memmove(master_returns, arg[0].ret_val, sizeof(ret_val));
+            }
+            combine_returns(master_returns, arg[1].ret_val);
+            combine_returns(master_returns, arg[2].ret_val);
         }
             // FILE SIZE IS LESS THAN 4K
         else {
