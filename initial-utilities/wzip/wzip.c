@@ -170,4 +170,5 @@ void write_and_free(ret_val *values) {
         writePair(*pair);
         free(pair);
     }
+    free(values->resultPairs);
 }
