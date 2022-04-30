@@ -5,6 +5,7 @@
 #include "stdio.h"
 #include "wzip.h"
 
+pthread_mutex_t m;
 
 int main(int argc, char *argv[]) {
     FILE *input_file = NULL;
@@ -27,7 +28,7 @@ int main(int argc, char *argv[]) {
         src = mmap(0, fileStat.st_size, PROT_READ, MAP_PRIVATE, fileno(input_file), 0);
 
         // IF FILE SIZE IS GREATER THAN 4K CREATE THREADS
-        if (fileStat.st_size > 409600000) {
+        if (fileStat.st_size > 4096) {
             pthread_t threads[3];
             arg_t arg[3];
             char *strings[3];
@@ -47,14 +48,14 @@ int main(int argc, char *argv[]) {
             init_arg(&arg[1], strings[1]);
             init_arg(&arg[2], strings[2]);
 
-            pthread_create(&threads[0], NULL, &parse, &arg[0]);
-            pthread_create(&threads[1], NULL, &parse, &arg[1]);
-            pthread_create(&threads[2], NULL, &parse, &arg[2]);
+            pthread_create(&threads[0], NULL, &worker, &arg[0]);
+            pthread_create(&threads[1], NULL, &worker, &arg[1]);
+            pthread_create(&threads[2], NULL, &worker, &arg[2]);
 
             pthread_join(threads[0], NULL);
             pthread_join(threads[1], NULL);
             pthread_join(threads[2], NULL);
-            
+
             if (fileNum > 1) {
                 combine_returns(master_returns, arg[0].ret_val);
             }
@@ -105,8 +106,10 @@ void init_arg(arg_t *arg, char *inputString) {
     arg->ret_val->numPairs = 0;
 }
 
-void *worker(arg_t arg) {
-    parse(&arg);
+void *worker(arg_t *arg) {
+    pthread_mutex_lock(&m);
+    parse(arg);
+    pthread_mutex_unlock(&m);
     return NULL;
 }
 
@@ -119,6 +122,9 @@ void* parse(arg_t *args) {
     args->ret_val->firstCharacter = args->arg_val->src[0];
 
     for (int i = 1; i < strlen(args->arg_val->src); ++i) {
+        if ((i % 10000) == 0) {
+            printf("Made it to %d\n", i);
+        }
         currChar = args->arg_val->src[i];
         if (currChar != lastChar) {
             // not the same make pair

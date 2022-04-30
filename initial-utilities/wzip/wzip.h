@@ -34,7 +34,7 @@ typedef struct __arg {
 
 struct stat fileStat;
 
-void *worker(arg_t arg);
+void *worker(arg_t *arg);
 
 void init_arg(arg_t *arg, char *inputString);
 
