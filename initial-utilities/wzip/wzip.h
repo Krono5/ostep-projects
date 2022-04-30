@@ -27,8 +27,8 @@ typedef struct arg_val_t {
 } arg_val;   // information passed to the thread
 
 typedef struct __arg {
-    arg_val arg_val;
-    ret_val ret_val;
+    arg_val* arg_val;
+    ret_val* ret_val;
 } arg_t;
 
 
@@ -44,7 +44,7 @@ void writePair(res_pair pair);
 
 void parseThreaded(arg_t *args);
 
-ret_val* combine_returns(ret_val *first, ret_val *second);
+void combine_returns(ret_val *first, ret_val *second);
 
 void write_and_free(ret_val *values);
 

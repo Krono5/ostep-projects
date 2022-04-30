@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    ret_val master_returns = {};
+    ret_val *master_returns;
 
     // GO THROUGH EVERY FILE
     for (int fileNum = 1; fileNum < argc; ++fileNum) {
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
             init_arg(&smallArg, src);
             parseThreaded(&smallArg);
             if (fileNum > 1) {
-                combine_returns(&master_returns, &smallArg.ret_val);
+                combine_returns(master_returns, smallArg.ret_val);
             }
             else {
                 master_returns = smallArg.ret_val;
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
         fclose(input_file);
     }
 
-    write_and_free(&master_returns);
+    write_and_free(master_returns);
 
 //    if (charCount > 0) {
 //        res_pair *pair = malloc(sizeof(res_pair));
@@ -91,9 +91,11 @@ int main(int argc, char *argv[]) {
  * @param inputString
  */
 void init_arg(arg_t *arg, char *inputString) {
-    arg->arg_val.src = inputString;
-    arg->ret_val.resultPairs = malloc(sizeof(res_pair));
-    arg->ret_val.numPairs = 0;
+    arg->arg_val = malloc(sizeof(arg_t));
+    arg->ret_val = malloc(sizeof(arg_t));
+    arg->arg_val->src = inputString;
+    arg->ret_val->resultPairs = malloc(sizeof(res_pair));
+    arg->ret_val->numPairs = 0;
 }
 
 void *worker(arg_t arg) {
@@ -162,47 +164,38 @@ void parseThreaded(arg_t *args) {
         }
     }
 
-    args->ret_val.numPairs++;
-    args->ret_val.resultPairs = realloc(args->ret_val.resultPairs, args->ret_val.numPairs * sizeof(res_pair));
-    args->ret_val.resultPairs[args->ret_val.numPairs - 1].character = lastChar;
-    args->ret_val.resultPairs[args->ret_val.numPairs - 1].numCharacters = charCount;
-    args->ret_val.lastCharacter = lastChar;
+    args->ret_val->numPairs++;
+    args->ret_val->resultPairs = realloc(args->ret_val->resultPairs, args->ret_val->numPairs * sizeof(res_pair));
+    args->ret_val->resultPairs[args->ret_val->numPairs - 1].character = lastChar;
+    args->ret_val->resultPairs[args->ret_val->numPairs - 1].numCharacters = charCount;
+    args->ret_val->lastCharacter = lastChar;
 }
 
-ret_val *combine_returns(ret_val *first, ret_val *second) {
-    ret_val *returnPairSet;
+void combine_returns(ret_val *first, ret_val *second) {
 
     // CHARACTERS ARE THE SAME, COMPACT THE ARGS
     if (first->lastCharacter == second->firstCharacter) {
-        returnPairSet = malloc((first->numPairs + second->numPairs - 1) * sizeof(res_pair));
+        first->numPairs = first->numPairs + second->numPairs - 1;
+        first->resultPairs = malloc(first->numPairs * sizeof(res_pair));
         first->resultPairs[first->numPairs].numCharacters += second->resultPairs[0].numCharacters;
 
-        for (int i = 0; i < first->numPairs; ++i) {
-            memmove(&returnPairSet[i], &first->resultPairs[i], sizeof(res_pair));
-        }
         for (int i = 1; i < second->numPairs; ++i) {
-            memmove(&returnPairSet[i + first->numPairs - 1], &second->resultPairs[i], sizeof(res_pair));
+            memmove(&first[i + first->numPairs - 1], &second->resultPairs[i], sizeof(res_pair));
         }
     }
         // NOT THE SAME, JUST COMPOUND
     else {
-        returnPairSet = malloc((first->numPairs + second->numPairs) * sizeof(res_pair));
-        for (int i = 0; i < first->numPairs; ++i) {
-            memmove(&returnPairSet[i], &first->resultPairs[i], sizeof(res_pair));
-        }
+        first->numPairs = first->numPairs + second->numPairs;
+        first->resultPairs = malloc(first->numPairs * sizeof(res_pair));
+
         for (int i = 0; i < second->numPairs; ++i) {
-            memmove(&returnPairSet[i + first->numPairs], &second->resultPairs[i], sizeof(res_pair));
+            memmove(&first[i + first->numPairs], &second->resultPairs[i], sizeof(res_pair));
         }
     }
 
-    for (int i = 0; i < first->numPairs; ++i) {
-        free(&first->resultPairs[i]);
-    }
     for (int i = 0; i < second->numPairs; ++i) {
         free(&second->resultPairs[i]);
     }
-
-    return returnPairSet;
 }
 
 void writePair(res_pair pair) {
