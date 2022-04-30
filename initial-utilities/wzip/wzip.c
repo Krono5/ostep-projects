@@ -107,18 +107,18 @@ void *worker(arg_t arg) {
 void parseThreaded(arg_t *args) {
     char currChar;
     int charCount = 1;
-    char lastChar = args->arg_val.src[0];
+    char lastChar = args->arg_val->src[0];
 
-    args->ret_val.firstCharacter = args->arg_val.src[0];
+    args->ret_val->firstCharacter = args->arg_val->src[0];
 
-    for (int i = 1; i < strlen(args->arg_val.src); ++i) {
-        currChar = args->arg_val.src[i];
+    for (int i = 1; i < strlen(args->arg_val->src); ++i) {
+        currChar = args->arg_val->src[i];
         if (currChar != lastChar) {
             // not the same make pair
-            args->ret_val.numPairs++;
-            args->ret_val.resultPairs = realloc(args->ret_val.resultPairs, args->ret_val.numPairs * sizeof(res_pair));
-            args->ret_val.resultPairs[args->ret_val.numPairs - 1].character = lastChar;
-            args->ret_val.resultPairs[args->ret_val.numPairs - 1].numCharacters = charCount;
+            args->ret_val->numPairs++;
+            args->ret_val->resultPairs = realloc(args->ret_val->resultPairs, args->ret_val->numPairs * sizeof(res_pair));
+            args->ret_val->resultPairs[args->ret_val->numPairs - 1].character = lastChar;
+            args->ret_val->resultPairs[args->ret_val->numPairs - 1].numCharacters = charCount;
             charCount = 1;
             lastChar = currChar;
         } else {
