@@ -166,9 +166,7 @@ void writePair(res_pair pair) {
 
 void write_and_free(ret_val *values) {
     for (int i = 0; i < values->numPairs; ++i) {
-        res_pair *pair = &values->resultPairs[i];
-        writePair(*pair);
-        free(pair);
+        writePair(values->resultPairs[i]);
     }
     free(values->resultPairs);
 }
