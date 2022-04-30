@@ -40,7 +40,7 @@ void init_arg(arg_t *arg, char *inputString);
 
 void writePair(res_pair pair);
 
-void parseThreaded(arg_t *args);
+void* parse(arg_t *args);
 
 void combine_returns(ret_val *first, ret_val *second);
 

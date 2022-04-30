@@ -47,9 +47,9 @@ int main(int argc, char *argv[]) {
             init_arg(&arg[1], strings[1]);
             init_arg(&arg[2], strings[2]);
 
-            pthread_create(&threads[0], NULL, worker, &arg[0]);
-            pthread_create(&threads[1], NULL, worker, &arg[1]);
-            pthread_create(&threads[2], NULL, worker, &arg[2]);
+            pthread_create(&threads[0], NULL, &parse, &arg[0]);
+            pthread_create(&threads[1], NULL, &parse, &arg[1]);
+            pthread_create(&threads[2], NULL, &parse, &arg[2]);
 
             pthread_join(threads[0], NULL);
             pthread_join(threads[1], NULL);
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
         else {
             arg_t smallArg = {};
             init_arg(&smallArg, src);
-            parseThreaded(&smallArg);
+            parse(&smallArg);
             if (fileNum > 1) {
                 combine_returns(master_returns, smallArg.ret_val);
             }
@@ -107,12 +107,12 @@ void init_arg(arg_t *arg, char *inputString) {
 }
 
 void *worker(arg_t arg) {
-    parseThreaded(&arg);
+    parse(&arg);
     return NULL;
 }
 
 
-void parseThreaded(arg_t *args) {
+void* parse(arg_t *args) {
     char currChar;
     int charCount = 1;
     char lastChar = args->arg_val->src[0];
@@ -120,6 +120,9 @@ void parseThreaded(arg_t *args) {
     args->ret_val->firstCharacter = args->arg_val->src[0];
 
     for (int i = 1; i < strlen(args->arg_val->src); ++i) {
+        if ((i % 100000) == 0) {
+            printf("Made it to: %d", i);
+        }
         currChar = args->arg_val->src[i];
         if (currChar != lastChar) {
             // not the same make pair
@@ -139,6 +142,8 @@ void parseThreaded(arg_t *args) {
     args->ret_val->resultPairs[args->ret_val->numPairs - 1].character = lastChar;
     args->ret_val->resultPairs[args->ret_val->numPairs - 1].numCharacters = charCount;
     args->ret_val->lastCharacter = lastChar;
+
+    return NULL;
 }
 
 void combine_returns(ret_val *first, ret_val *second) {
