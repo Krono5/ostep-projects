@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    ret_val *master_returns;
+    ret_val *master_returns = malloc(sizeof(ret_val));
 
     // GO THROUGH EVERY FILE
     for (int fileNum = 1; fileNum < argc; ++fileNum) {
@@ -65,9 +65,8 @@ int main(int argc, char *argv[]) {
                 combine_returns(master_returns, smallArg.ret_val);
             }
             else {
-                master_returns = smallArg.ret_val;
+                memmove(master_returns, smallArg.ret_val, sizeof(ret_val));
             }
-//            parse(src, &isFirstChar, &charCount, &lastChar, &firstChar);
         }
         fclose(input_file);
     }
@@ -138,8 +137,8 @@ void combine_returns(ret_val *first, ret_val *second) {
     // CHARACTERS ARE THE SAME, COMPACT THE ARGS
     if (first->lastCharacter == second->firstCharacter) {
         first->numPairs = first->numPairs + second->numPairs - 1;
-        first->resultPairs = malloc(first->numPairs * sizeof(res_pair));
-        first->resultPairs[first->numPairs].numCharacters += second->resultPairs[0].numCharacters;
+        first->resultPairs = realloc(first->resultPairs, first->numPairs * sizeof(res_pair));
+        first->resultPairs[first->numPairs - 1].numCharacters += second->resultPairs[0].numCharacters;
 
         for (int i = 1; i < second->numPairs; ++i) {
             memmove(&first[i + first->numPairs - 1], &second->resultPairs[i], sizeof(res_pair));
@@ -148,7 +147,7 @@ void combine_returns(ret_val *first, ret_val *second) {
         // NOT THE SAME, JUST COMPOUND
     else {
         first->numPairs = first->numPairs + second->numPairs;
-        first->resultPairs = malloc(first->numPairs * sizeof(res_pair));
+        first->resultPairs = realloc(first->resultPairs, first->numPairs * sizeof(res_pair));
 
         for (int i = 0; i < second->numPairs; ++i) {
             memmove(&first[i + first->numPairs], &second->resultPairs[i], sizeof(res_pair));
