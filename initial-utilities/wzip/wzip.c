@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
         src = mmap(0, fileStat.st_size, PROT_READ, MAP_PRIVATE, fileno(input_file), 0);
 
         // IF FILE SIZE IS GREATER THAN 4K CREATE THREADS
-        if (fileStat.st_size > 4096) {
+        if (fileStat.st_size > 409600000) {
             pthread_t threads[3];
             arg_t arg[3];
             char *strings[3];
@@ -54,8 +54,7 @@ int main(int argc, char *argv[]) {
             pthread_join(threads[0], NULL);
             pthread_join(threads[1], NULL);
             pthread_join(threads[2], NULL);
-
-
+            
             if (fileNum > 1) {
                 combine_returns(master_returns, arg[0].ret_val);
             }
