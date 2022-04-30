@@ -120,9 +120,6 @@ void* parse(arg_t *args) {
     args->ret_val->firstCharacter = args->arg_val->src[0];
 
     for (int i = 1; i < strlen(args->arg_val->src); ++i) {
-        if ((i % 100000) == 0) {
-            printf("Made it to: %d", i);
-        }
         currChar = args->arg_val->src[i];
         if (currChar != lastChar) {
             // not the same make pair
